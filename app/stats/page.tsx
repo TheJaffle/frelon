@@ -37,15 +37,15 @@ export default async function StatsPage() {
 
   return (
       <div className="min-h-screen flex flex-col relative">
-        {/* Subtle background */}
+        {/* Subtle background
         <div className="fixed inset-0 -z-10">
           <Image
-              src="/frelon-side.jpg"
+              src=""
               alt=""
               fill
               className="object-cover object-right"
           />
-        </div>
+        </div> */}
 
         <header className="bg-amber-600 shadow-md relative z-10">
           <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between gap-3">
