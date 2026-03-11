@@ -195,7 +195,7 @@ export default function LoginPage() {
               {nameIsValid && (
                   <div className="flex flex-col gap-1">
                     <label htmlFor="password" className="text-sm font-medium text-gray-700">
-                      Mot de passe
+                      Mot de passe (4 derniers chiffres de votre numéro de portable)
                     </label>
                     <input
                         id="password"
