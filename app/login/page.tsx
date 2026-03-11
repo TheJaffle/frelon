@@ -1,22 +1,18 @@
-
 "use client"
 
 import { useEffect, useState, useActionState, useRef, useCallback } from "react"
+import Image from "next/image"
 import { getUsers, login } from "./actions"
 
 type User = { id: string; name: string }
 
 export default function LoginPage() {
   const [users, setUsers] = useState<User[]>([])
-
-  // Autocomplete state
   const [inputValue, setInputValue] = useState("")
   const [suggestions, setSuggestions] = useState<User[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [activeIndex, setActiveIndex] = useState(-1)
   const [nameError, setNameError] = useState("")
-
-  // Resolved user after a valid name is confirmed
   const [selectedUserId, setSelectedUserId] = useState("")
 
   const inputRef = useRef<HTMLInputElement>(null)
@@ -34,7 +30,6 @@ export default function LoginPage() {
     getUsers().then(setUsers)
   }, [])
 
-  // Resolve user id from input value on every change
   const resolveUser = useCallback(
       (value: string) => {
         const normalized = value.trim().toUpperCase()
@@ -54,14 +49,12 @@ export default function LoginPage() {
     setInputValue(value)
     setActiveIndex(-1)
     setNameError("")
-
     if (value.trim().length === 0) {
       setSuggestions([])
       setShowSuggestions(false)
       setSelectedUserId("")
       return
     }
-
     const filtered = users.filter((u) =>
         u.name.toUpperCase().startsWith(value.trim().toUpperCase())
     )
@@ -81,7 +74,6 @@ export default function LoginPage() {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!showSuggestions || suggestions.length === 0) return
-
     if (e.key === "ArrowDown") {
       e.preventDefault()
       setActiveIndex((prev) => Math.min(prev + 1, suggestions.length - 1))
@@ -99,9 +91,7 @@ export default function LoginPage() {
     }
   }
 
-  // Validate name on blur before allowing password entry
   const handleBlur = () => {
-    // Delay to allow suggestion click to fire first
     setTimeout(() => {
       setShowSuggestions(false)
       if (inputValue.trim().length > 0 && !selectedUserId) {
@@ -125,20 +115,28 @@ export default function LoginPage() {
   const nameIsValid = selectedUserId !== ""
 
   return (
-      <div className="min-h-screen bg-amber-50 flex flex-col">
-        <header className="bg-amber-600 shadow-md">
+      <div className="min-h-screen flex flex-col">
+        <header className="bg-amber-600 shadow-md relative z-10">
           <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-3">
-            <span className="text-3xl">🐝</span>
+            <Image src="/frelon-face.jpg" alt="Frelon" width={36} height={36} className="rounded-full object-cover" />
             <span className="text-white font-semibold text-lg tracking-wide">
             Frelon Asiatique
           </span>
           </div>
         </header>
 
-        <main className="flex-1 flex items-center justify-center px-6 py-16">
-          <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 flex flex-col gap-6">
+        <main className="flex-1 relative flex items-center justify-center px-6 py-16">
+          {/* Background */}
+          <div className="absolute inset-0 z-0">
+            <Image src="/frelon-flight.jpg" alt="" fill className="object-cover" />
+            <div className="absolute inset-0 bg-amber-950/70 backdrop-blur-sm" />
+          </div>
+
+          <div className="relative z-10 w-full max-w-md bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-8 flex flex-col gap-6">
             <div className="flex flex-col items-center gap-2">
-              <span className="text-4xl">🔐</span>
+              <div className="w-16 h-16 rounded-full overflow-hidden shadow-md border-2 border-amber-200">
+                <Image src="/frelon-face.jpg" alt="Frelon asiatique" width={64} height={64} className="object-cover w-full h-full" />
+              </div>
               <h1 className="text-2xl font-bold text-amber-800 text-center">
                 Connexion
               </h1>
@@ -150,7 +148,6 @@ export default function LoginPage() {
             <form action={handleSubmit} className="flex flex-col gap-5">
               <input type="hidden" name="userId" value={selectedUserId} />
 
-              {/* Autocomplete name input */}
               <div className="flex flex-col gap-1 relative">
                 <label htmlFor="userName" className="text-sm font-medium text-gray-700">
                   Participant
@@ -164,9 +161,7 @@ export default function LoginPage() {
                     onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
                     onBlur={handleBlur}
-                    onFocus={() => {
-                      if (suggestions.length > 0) setShowSuggestions(true)
-                    }}
+                    onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true) }}
                     placeholder="Tapez votre nom…"
                     className={`border rounded-lg px-4 py-2.5 text-gray-800 focus:outline-none focus:ring-2 transition ${
                         nameError
@@ -176,21 +171,14 @@ export default function LoginPage() {
                                 : "border-gray-300 focus:ring-amber-400"
                     }`}
                 />
-
-                {/* Suggestion list */}
                 {showSuggestions && suggestions.length > 0 && (
-                    <ul
-                        ref={listRef}
-                        className="absolute top-full left-0 right-0 z-10 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-52 overflow-y-auto"
-                    >
+                    <ul ref={listRef} className="absolute top-full left-0 right-0 z-10 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-52 overflow-y-auto">
                       {suggestions.map((u, i) => (
                           <li
                               key={u.id}
                               onMouseDown={() => selectSuggestion(u)}
                               className={`px-4 py-2.5 cursor-pointer text-gray-800 text-sm transition-colors ${
-                                  i === activeIndex
-                                      ? "bg-amber-100 text-amber-900 font-medium"
-                                      : "hover:bg-amber-50"
+                                  i === activeIndex ? "bg-amber-100 text-amber-900 font-medium" : "hover:bg-amber-50"
                               }`}
                           >
                             {u.name}
@@ -198,22 +186,12 @@ export default function LoginPage() {
                       ))}
                     </ul>
                 )}
-
-                {/* No match message */}
-                {showSuggestions &&
-                    suggestions.length === 0 &&
-                    inputValue.trim().length > 0 && (
-                        <p className="text-gray-400 text-xs mt-1 px-1">
-                          Aucun participant trouvé.
-                        </p>
-                    )}
-
-                {nameError && (
-                    <p className="text-red-600 text-sm mt-1">{nameError}</p>
+                {showSuggestions && suggestions.length === 0 && inputValue.trim().length > 0 && (
+                    <p className="text-gray-400 text-xs mt-1 px-1">Aucun participant trouvé.</p>
                 )}
+                {nameError && <p className="text-red-600 text-sm mt-1">{nameError}</p>}
               </div>
 
-              {/* Password field — only shown once a valid name is resolved */}
               {nameIsValid && (
                   <div className="flex flex-col gap-1">
                     <label htmlFor="password" className="text-sm font-medium text-gray-700">
@@ -227,9 +205,7 @@ export default function LoginPage() {
                         placeholder="Saisissez votre mot de passe"
                         className="border border-gray-300 rounded-lg px-4 py-2.5 text-gray-800 focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
                     />
-                    {state?.error && (
-                        <p className="text-red-600 text-sm mt-1">{state.error}</p>
-                    )}
+                    {state?.error && <p className="text-red-600 text-sm mt-1">{state.error}</p>}
                   </div>
               )}
 
@@ -244,7 +220,7 @@ export default function LoginPage() {
           </div>
         </main>
 
-        <footer className="bg-amber-600 py-4">
+        <footer className="bg-amber-600 py-4 relative z-10">
           <p className="text-center text-amber-100 text-sm">
             © {new Date().getFullYear()} — Campagne de piégeage du frelon asiatique
           </p>

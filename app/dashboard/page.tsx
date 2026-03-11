@@ -1,6 +1,6 @@
-
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import Image from "next/image"
 import { supabase } from "@/lib/supabase"
 import DashboardClient from "./DashboardClient"
 
@@ -29,11 +29,21 @@ export default async function DashboardPage() {
     const user = data as unknown as UserRow
 
     return (
-        <div className="min-h-screen bg-amber-50 flex flex-col">
-            <header className="bg-amber-600 shadow-md">
+        <div className="min-h-screen flex flex-col relative">
+            {/* Subtle background image */}
+            <div className="fixed inset-0 -z-10">
+                <Image
+                    src="/frelon-side.jpg"
+                    alt=""
+                    fill
+                    className="object-cover object-right"
+                />
+            </div>
+
+            <header className="bg-amber-600 shadow-md relative z-10">
                 <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
-                        <span className="text-3xl">🐝</span>
+                        <Image src="/frelon-face.jpg" alt="Frelon" width={36} height={36} className="rounded-full object-cover" />
                         <span className="text-white font-semibold text-lg tracking-wide">
               Frelon Asiatique
             </span>
@@ -56,11 +66,13 @@ export default async function DashboardPage() {
                 </div>
             </header>
 
-            <main className="flex-1 flex justify-center px-4 py-10">
+            <main className="flex-1 flex justify-center px-4 py-10 relative z-10">
                 <div className="w-full max-w-2xl flex flex-col gap-6">
                     <div className="text-center">
-                        <span className="text-4xl">🪤</span>
-                        <h1 className="text-2xl sm:text-3xl font-bold text-amber-800 mt-2">
+                        <div className="w-16 h-16 rounded-full overflow-hidden shadow-md border-2 border-amber-200 mx-auto">
+                            <Image src="/frelon-flight.jpg" alt="Frelon asiatique" width={64} height={64} className="object-cover w-full h-full" />
+                        </div>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-amber-800 mt-3">
                             Bonjour, {user.name} !
                         </h1>
                         <p className="text-gray-500 text-sm mt-1">
@@ -72,7 +84,7 @@ export default async function DashboardPage() {
                 </div>
             </main>
 
-            <footer className="bg-amber-600 py-4">
+            <footer className="bg-amber-600 py-4 relative z-10">
                 <p className="text-center text-amber-100 text-sm">
                     © {new Date().getFullYear()} — Campagne de piégeage du frelon asiatique
                 </p>
