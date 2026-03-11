@@ -1,0 +1,155 @@
+
+"use client"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { saveCaptures } from "./actions"
+
+type Props = {
+  userId: string
+  initialData: Record<string, unknown>
+  weeks: number
+}
+
+const WEEK_DATES: string[] = (() => {
+  const dates: string[] = []
+  let day = 9
+  let month = 3
+  const monthNames: Record<number, string> = { 3: "03", 4: "04", 5: "05" }
+  const daysInMonth: Record<number, number> = { 3: 31, 4: 30, 5: 31 }
+
+  for (let i = 0; i < 12; i++) {
+    const startDay = day
+    const startMonth = month
+    let endDay = day + 6
+    let endMonth = month
+
+    if (endDay > daysInMonth[endMonth]) {
+      endDay -= daysInMonth[endMonth]
+      endMonth += 1
+    }
+
+    dates.push(
+        `${String(startDay).padStart(2, "0")}/${monthNames[startMonth]}-${String(endDay).padStart(2, "0")}/${monthNames[endMonth]}`
+    )
+
+    day += 7
+    if (day > daysInMonth[month]) {
+      day -= daysInMonth[month]
+      month += 1
+    }
+  }
+  return dates
+})()
+
+export default function DashboardClient({ userId, initialData, weeks }: Props) {
+  const router = useRouter()
+
+  const buildInitial = () => {
+    const state: Record<string, number> = {}
+    for (let w = 1; w <= weeks; w++) {
+      state[`asian_week_${w}`] = Number(initialData[`asian_week_${w}`]) || 0
+      state[`europe_week_${w}`] = Number(initialData[`europe_week_${w}`]) || 0
+    }
+    return state
+  }
+
+  const [values, setValues] = useState<Record<string, number>>(buildInitial)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState("")
+
+  const handleChange = (key: string, raw: string) => {
+    const n = raw === "" ? 0 : Math.max(0, parseInt(raw, 10) || 0)
+    setValues((prev) => ({ ...prev, [key]: n }))
+    setSaveError("")
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsSaving(true)
+    setSaveError("")
+
+    const formData = new FormData()
+    for (const [key, val] of Object.entries(values)) {
+      formData.set(key, String(val))
+    }
+
+    const result = await saveCaptures(userId, formData)
+    setIsSaving(false)
+
+    if (result.success) {
+      router.push("/stats")
+    } else {
+      setSaveError(result.error ?? "Erreur inconnue.")
+    }
+  }
+
+  return (
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2 items-center">
+
+        {/* Table wrapper */}
+        <div className="flex flex-col gap-2 w-fit">
+
+          {/* Column headers */}
+          <div className="grid grid-cols-[auto_auto_auto] gap-x-4 px-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+            <span className="whitespace-nowrap">Semaine</span>
+            <span className="w-24 text-center whitespace-nowrap">🐝 Asiatiques</span>
+            <span className="w-24 text-center whitespace-nowrap">🟡 Européens</span>
+          </div>
+
+          {/* Week rows */}
+          {Array.from({ length: weeks }, (_, i) => i + 1).map((w) => (
+              <div
+                  key={w}
+                  className="bg-white rounded-lg shadow-sm border border-gray-100 px-3 py-2 grid grid-cols-[auto_auto_auto] gap-x-4 items-center"
+              >
+            <span className="text-xs font-semibold text-amber-700 whitespace-nowrap">
+              S{w}{" "}
+              <span className="font-normal text-gray-400">
+                ({WEEK_DATES[w - 1]})
+              </span>
+            </span>
+
+                {/* Asian hornets */}
+                <div className="w-24 flex justify-center">
+                  <input
+                      type="number"
+                      min={0}
+                      max={999}
+                      value={values[`asian_week_${w}`]}
+                      onChange={(e) => handleChange(`asian_week_${w}`, e.target.value)}
+                      className="border border-gray-200 rounded-md py-1 text-gray-800 text-sm text-center w-14 focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+                  />
+                </div>
+
+                {/* European hornets */}
+                <div className="w-24 flex justify-center">
+                  <input
+                      type="number"
+                      min={0}
+                      max={999}
+                      value={values[`europe_week_${w}`]}
+                      onChange={(e) => handleChange(`europe_week_${w}`, e.target.value)}
+                      className="border border-gray-200 rounded-md py-1 text-gray-800 text-sm text-center w-14 focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+                  />
+                </div>
+              </div>
+          ))}
+        </div>
+
+        {saveError && (
+            <p className="text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2 text-sm text-center">
+              {saveError}
+            </p>
+        )}
+
+        <button
+            type="submit"
+            disabled={isSaving}
+            className="bg-amber-600 hover:bg-amber-700 active:bg-amber-800 disabled:opacity-60 text-white font-semibold text-sm py-2 px-6 rounded-lg shadow-sm transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-amber-300 mt-2"
+        >
+          {isSaving ? "Enregistrement…" : "Enregistrer"}
+        </button>
+      </form>
+  )
+}
