@@ -150,63 +150,56 @@ export default function DashboardClient({ userId, initialData, weeks }: Props) {
           Saisissez vos captures pour chaque semaine, puis enregistrez.
         </p>
 
-        {/* Table wrapper */}
-        <div className="flex flex-col gap-2 w-fit">
+        {/* Table wrapper — constrained to same width as the rest */}
+        <div className="w-full max-w-2xl mx-auto flex flex-col gap-2">
 
           {/* Column headers */}
-          <div className="grid grid-cols-[auto_auto_auto_auto] gap-x-4 px-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">
-            <span className="whitespace-nowrap">Semaine</span>
-            <span className="w-20 text-center whitespace-nowrap">Asiat</span>
-            <span className="w-20 text-center whitespace-nowrap">Europ</span>
-            <span className="w-20 text-center whitespace-nowrap">Autres</span>
+          <div className="grid grid-cols-[1fr_auto_auto_auto] gap-3 px-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+            <span>Semaine</span>
+            <span className="w-16 text-center">Asiat</span>
+            <span className="w-16 text-center">Europ</span>
+            <span className="w-16 text-center">Autres</span>
           </div>
 
           {/* Week rows */}
           {Array.from({ length: weeks }, (_, i) => i + 1).map((w) => (
               <div
                   key={w}
-                  className="bg-white rounded-lg shadow-sm border border-gray-100 px-3 py-2 grid grid-cols-[auto_auto_auto_auto] gap-x-4 items-center"
+                  className="bg-white rounded-lg shadow-sm border border-gray-100 px-3 py-2 grid grid-cols-[1fr_auto_auto_auto] gap-3 items-center"
               >
-                <span className="text-xs font-semibold text-amber-700 whitespace-nowrap">
-                  {WEEK_DATES[w - 1]}
-                </span>
+            <span className="text-xs font-semibold text-amber-700 whitespace-nowrap">
+              {WEEK_DATES[w - 1]}
+            </span>
 
                 {/* Asian hornets */}
-                <div className="w-20 flex justify-center">
-                  <input
-                      type="number"
-                      min={0}
-                      max={999}
-                      value={values[`asian_week_${w}`]}
-                      onChange={(e) => handleChange(`asian_week_${w}`, e.target.value)}
-                      className="border border-gray-200 rounded-md py-1 text-gray-800 text-sm text-center w-14 focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
-                  />
-                </div>
+                <input
+                    type="number"
+                    min={0}
+                    max={999}
+                    value={values[`asian_week_${w}`]}
+                    onChange={(e) => handleChange(`asian_week_${w}`, e.target.value)}
+                    className="w-16 text-center rounded-md border border-gray-200 py-1 text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+                />
 
                 {/* European hornets */}
-                <div className="w-20 flex justify-center">
-                  <input
-                      type="number"
-                      min={0}
-                      max={999}
-                      value={values[`europe_week_${w}`]}
-                      onChange={(e) => handleChange(`europe_week_${w}`, e.target.value)}
-                      className="border border-gray-200 rounded-md py-1 text-gray-800 text-sm text-center w-14 focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
-                  />
-                </div>
+                <input
+                    type="number"
+                    min={0}
+                    max={999}
+                    value={values[`europe_week_${w}`]}
+                    onChange={(e) => handleChange(`europe_week_${w}`, e.target.value)}
+                    className="w-16 text-center rounded-md border border-gray-200 py-1 text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+                />
 
                 {/* Other hornets */}
-                <div className="w-20 flex justify-center">
-                  <input
-                      type="number"
-                      min={0}
-                      max={999}
-                      value={values[`other_week_${w}`]}
-                      onChange={(e) => handleChange(`other_week_${w}`, e.target.value)}
-                      className="border border-gray-200 rounded-md py-1 text-gray-800 text-sm text-center w-14 focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
-                  />
-                </div>
-
+                <input
+                    type="number"
+                    min={0}
+                    max={999}
+                    value={values[`other_week_${w}`]}
+                    onChange={(e) => handleChange(`other_week_${w}`, e.target.value)}
+                    className="w-16 text-center rounded-md border border-gray-200 py-1 text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+                />
               </div>
           ))}
         </div>
