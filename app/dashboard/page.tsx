@@ -77,6 +77,9 @@ export default async function DashboardPage() {
                         <h1 className="text-2xl sm:text-3xl font-bold text-amber-800 mt-3">
                             Bonjour, {user.name} !
                         </h1>
+                        <h2 className="text-center text-amber-800 text-sm">
+                            {user.address}
+                        </h2>
                     </div>
 
                     <DashboardClient userId={userId} initialData={user} weeks={WEEKS} />
