@@ -11,6 +11,23 @@ type Props = {
   weeks: number
 }
 
+const TRAP_TYPE_OPTIONS = [
+  "BeeVital",
+  "Grilel Neoppi",
+  "Ornetin",
+  "Osaka",
+  "Vespa Catch Select",
+  "Vespa Catch",
+  "Good4Bees",
+  "Bouteille (à proscrire)",
+]
+
+const APPAT_OPTIONS = [
+  "Classique 1/3-1/3-1/3",
+  "Eau sucrée",
+  "Autre",
+]
+
 const WEEK_DATES: string[] = (() => {
   const dates: string[] = []
   let day = 9
@@ -49,12 +66,15 @@ export default function DashboardClient({ userId, initialData, weeks }: Props) {
     const state: Record<string, number> = {}
     for (let w = 1; w <= weeks; w++) {
       state[`asian_week_${w}`] = Number(initialData[`asian_week_${w}`]) || 0
+      state[`other_week_${w}`] = Number(initialData[`other_week_${w}`]) || 0
       state[`europe_week_${w}`] = Number(initialData[`europe_week_${w}`]) || 0
     }
     return state
   }
 
   const [values, setValues] = useState<Record<string, number>>(buildInitial)
+  const [trapType, setTrapType] = useState<string>(String(initialData.trap_type ?? ""))
+  const [appat, setAppat] = useState<string>(String(initialData.appat ?? ""))
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState("")
 
@@ -73,6 +93,8 @@ export default function DashboardClient({ userId, initialData, weeks }: Props) {
     for (const [key, val] of Object.entries(values)) {
       formData.set(key, String(val))
     }
+    formData.set("trap_type", trapType)
+    formData.set("appat", appat)
 
     const result = await saveCaptures(userId, formData)
     setIsSaving(false)
@@ -85,33 +107,72 @@ export default function DashboardClient({ userId, initialData, weeks }: Props) {
   }
 
   return (
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2 items-center">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 items-center">
+
+        {/* Dropdowns for trap type & bait */}
+        <div className="w-full max-w-sm flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
+            <label htmlFor="trap_type" className="text-sm font-medium text-gray-700">
+              Type de piège
+            </label>
+            <select
+                id="trap_type"
+                value={trapType}
+                onChange={(e) => { setTrapType(e.target.value); setSaveError("") }}
+                className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+            >
+              <option value="">— Sélectionnez —</option>
+              {TRAP_TYPE_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label htmlFor="appat" className="text-sm font-medium text-gray-700">
+              Type d&apos;appât
+            </label>
+            <select
+                id="appat"
+                value={appat}
+                onChange={(e) => { setAppat(e.target.value); setSaveError("") }}
+                className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+            >
+              <option value="">— Sélectionnez —</option>
+              {APPAT_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <p className="text-gray-500 text-sm">
+          Saisissez vos captures pour chaque semaine, puis enregistrez.
+        </p>
 
         {/* Table wrapper */}
         <div className="flex flex-col gap-2 w-fit">
 
           {/* Column headers */}
-          <div className="grid grid-cols-[auto_auto_auto] gap-x-4 px-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+          <div className="grid grid-cols-[auto_auto_auto_auto] gap-x-4 px-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">
             <span className="whitespace-nowrap">Semaine</span>
-            <span className="w-24 text-center whitespace-nowrap">🐝 Asiatiques</span>
-            <span className="w-24 text-center whitespace-nowrap">🟡 Européens</span>
+            <span className="w-20 text-center whitespace-nowrap">Asiat</span>
+            <span className="w-20 text-center whitespace-nowrap">Europ</span>
+            <span className="w-20 text-center whitespace-nowrap">Autres</span>
           </div>
 
           {/* Week rows */}
           {Array.from({ length: weeks }, (_, i) => i + 1).map((w) => (
               <div
                   key={w}
-                  className="bg-white rounded-lg shadow-sm border border-gray-100 px-3 py-2 grid grid-cols-[auto_auto_auto] gap-x-4 items-center"
+                  className="bg-white rounded-lg shadow-sm border border-gray-100 px-3 py-2 grid grid-cols-[auto_auto_auto_auto] gap-x-4 items-center"
               >
-            <span className="text-xs font-semibold text-amber-700 whitespace-nowrap">
-              S{w}{" "}
-              <span className="font-normal text-gray-400">
-                ({WEEK_DATES[w - 1]})
-              </span>
-            </span>
+                <span className="text-xs font-semibold text-amber-700 whitespace-nowrap">
+                  {WEEK_DATES[w - 1]}
+                </span>
 
                 {/* Asian hornets */}
-                <div className="w-24 flex justify-center">
+                <div className="w-20 flex justify-center">
                   <input
                       type="number"
                       min={0}
@@ -123,7 +184,7 @@ export default function DashboardClient({ userId, initialData, weeks }: Props) {
                 </div>
 
                 {/* European hornets */}
-                <div className="w-24 flex justify-center">
+                <div className="w-20 flex justify-center">
                   <input
                       type="number"
                       min={0}
@@ -133,6 +194,19 @@ export default function DashboardClient({ userId, initialData, weeks }: Props) {
                       className="border border-gray-200 rounded-md py-1 text-gray-800 text-sm text-center w-14 focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
                   />
                 </div>
+
+                {/* Other hornets */}
+                <div className="w-20 flex justify-center">
+                  <input
+                      type="number"
+                      min={0}
+                      max={999}
+                      value={values[`other_week_${w}`]}
+                      onChange={(e) => handleChange(`other_week_${w}`, e.target.value)}
+                      className="border border-gray-200 rounded-md py-1 text-gray-800 text-sm text-center w-14 focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+                  />
+                </div>
+
               </div>
           ))}
         </div>

@@ -8,8 +8,10 @@ const WEEKS = 12
 
 type UserRow = {
     name: string
+    trap_type: string | null
+    appat: string | null
 } & {
-    [K in `asian_week_${number}` | `europe_week_${number}`]: number | null
+    [K in `asian_week_${number}` | `europe_week_${number}` | `other_week_${number}`]: number | null
 }
 
 export default async function DashboardPage() {
@@ -75,9 +77,6 @@ export default async function DashboardPage() {
                         <h1 className="text-2xl sm:text-3xl font-bold text-amber-800 mt-3">
                             Bonjour, {user.name} !
                         </h1>
-                        <p className="text-gray-500 text-sm mt-1">
-                            Saisissez vos captures pour chaque semaine, puis enregistrez.
-                        </p>
                     </div>
 
                     <DashboardClient userId={userId} initialData={user} weeks={WEEKS} />
