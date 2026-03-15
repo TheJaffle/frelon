@@ -10,8 +10,11 @@ type UserRow = {
     name: string
     trap_type: string | null
     appat: string | null
+    address: string | null
 } & {
     [K in `asian_week_${number}` | `europe_week_${number}` | `other_week_${number}`]: number | null
+} & {
+    [K in `declared_week_${number}`]: boolean | null
 }
 
 export default async function DashboardPage() {
