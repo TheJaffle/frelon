@@ -127,14 +127,14 @@ export default function DashboardClient({ userId, initialData, weeks }: Props) {
 
     // Rule A — future week
     if (WEEK_RANGES[w - 1].endDate > today) {
-      setModalMessage("Vous ne pouvez pas déclarer une semaine qui appartient au futur.")
+      setModalMessage("Vous ne pouvez pas déclarer les prises d'une semaine avant le dimanche de celle-ci")
       return
     }
 
     // Rule B — previous weeks must be declared
     for (let prev = 1; prev < w; prev++) {
       if (!isWeekVisible(prev)) {
-        setModalMessage("Avant de déclarer cette semaine, vous devez déclarer les semaines précédentes (même si vous n'avez pas fait de prises).")
+        setModalMessage("Avant de déclarer une semaine, vous devez avoir déclaré toutes les semaines précédentes (même si vous n'avez pas fait de prises).")
         return
       }
     }

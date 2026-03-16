@@ -10,11 +10,21 @@ export default async function StatsPage() {
   const userId = cookieStore.get("user_id")?.value
   if (!userId) redirect("/login")
 
+  // Fetch the current user to check admin status
+  const { data: currentUser } = await supabase
+      .from("users")
+      .select("admin")
+      .eq("id", userId)
+      .single()
+
+  const isAdmin = Boolean(currentUser?.admin)
+
   const { data: users, error } = await supabase
       .from("users")
       .select("*")
 
   if (error || !users) redirect("/login")
+
 
   const totalUsers = users.length
 
@@ -60,6 +70,11 @@ export default async function StatsPage() {
             </span>
             </div>
             <div className="flex items-center gap-4">
+              {isAdmin && (
+                  <a href="/admin" className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors">
+                    Admin
+                  </a>
+              )}
               <a href="/dashboard" className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors">
                 ← Retour
               </a>

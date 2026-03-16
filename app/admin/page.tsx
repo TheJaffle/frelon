@@ -3,11 +3,9 @@ import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import Image from "next/image"
 import { supabase } from "@/lib/supabase"
-import DashboardClient from "./DashboardClient"
+import AdminClient from "./AdminClient"
 
-const WEEKS = 12
-
-export default async function DashboardPage() {
+export default async function AdminPage() {
     const cookieStore = await cookies()
     const userId = cookieStore.get("user_id")?.value
 
@@ -15,13 +13,19 @@ export default async function DashboardPage() {
 
     const { data: user, error } = await supabase
         .from("users")
-        .select("*")
+        .select("name, admin")
         .eq("id", userId)
         .single()
 
     if (error || !user) redirect("/login")
+    if (!user.admin) redirect("/dashboard")
 
-    const isAdmin = Boolean(user.admin)
+    // Fetch non-admin trappers for the list
+    const { data: trappers } = await supabase
+        .from("users")
+        .select("id, name, address, telephone")
+        .eq("admin", false)
+        .order("name", { ascending: true })
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -34,19 +38,11 @@ export default async function DashboardPage() {
                         </span>
                     </div>
                     <div className="flex items-center gap-4">
-                        {isAdmin && (
-                            <a
-                                href="/admin"
-                                className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors"
-                            >
-                                Admin
-                            </a>
-                        )}
                         <a
-                            href="/stats"
+                            href="/dashboard"
                             className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors"
                         >
-                            Statistiques
+                            ← Retour
                         </a>
                         <form
                             action={async () => {
@@ -71,18 +67,21 @@ export default async function DashboardPage() {
                 <div className="w-full max-w-2xl flex flex-col gap-8">
                     <div className="text-center">
                         <h1 className="text-2xl sm:text-3xl font-bold text-amber-800">
-                            Bonjour, {user.name}
+                            Administration
                         </h1>
                         <p className="text-gray-500 text-sm mt-1">
-                            Déclarez vos captures hebdomadaires
+                            Gestion des piégeurs et de la campagne
                         </p>
                     </div>
 
-                    <DashboardClient
-                        userId={userId}
-                        initialData={user as Record<string, unknown>}
-                        weeks={WEEKS}
-                    />
+                    <a
+                        href="/admin/new-user"
+                        className="block w-full text-center bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-semibold text-base py-4 rounded-xl shadow-sm transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-amber-300"
+                    >
+                        Ajouter un nouveau piégeur
+                    </a>
+
+                    <AdminClient initialTrappers={trappers ?? []} />
                 </div>
             </main>
 
