@@ -62,12 +62,12 @@ export default async function StatsPage() {
         </div> */}
 
         <header className="bg-amber-600 shadow-md relative z-10">
-          <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between gap-3">
+          <div className="max-w-4xl mx-auto px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
             <div className="flex items-center gap-3">
               <Image src="/frelon-face.jpg" alt="Frelon" width={36} height={36} className="rounded-full object-cover" />
               <span className="text-white font-semibold text-lg tracking-wide">
-              Frelon Asiatique
-            </span>
+                Frelon Asiatique
+              </span>
             </div>
             <div className="flex items-center gap-4">
               {isAdmin && (

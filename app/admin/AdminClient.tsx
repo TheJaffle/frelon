@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { deleteUser } from "./actions"
 
 type Trapper = {
@@ -8,6 +9,7 @@ type Trapper = {
     name: string
     address: string | null
     telephone: string | null
+    admin: boolean
 }
 
 type Props = {
@@ -15,6 +17,7 @@ type Props = {
 }
 
 export default function AdminClient({ initialTrappers }: Props) {
+    const router = useRouter()
     const [trappers, setTrappers] = useState<Trapper[]>(initialTrappers)
     const [confirmTarget, setConfirmTarget] = useState<Trapper | null>(null)
     const [isDeleting, setIsDeleting] = useState(false)
@@ -57,12 +60,12 @@ export default function AdminClient({ initialTrappers }: Props) {
             {/* Trappers list */}
             <div className="flex flex-col gap-3">
                 <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">
-                    Piégeurs ({trappers.length})
+                    Utilisateurs ({trappers.length})
                 </h2>
 
                 {trappers.length === 0 ? (
                     <p className="text-gray-400 text-sm text-center py-4">
-                        Aucun piégeur enregistré.
+                        Aucun utilisateur enregistré.
                     </p>
                 ) : (
                     trappers.map((t) => (
@@ -71,9 +74,16 @@ export default function AdminClient({ initialTrappers }: Props) {
                             className="bg-white rounded-xl shadow-sm border border-gray-100 px-4 py-3 flex items-center justify-between gap-3"
                         >
                             <div className="flex flex-col min-w-0">
-                                <span className="text-sm font-semibold text-gray-800 truncate">
-                                    {t.name}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm font-semibold text-gray-800 truncate">
+                                        {t.name}
+                                    </span>
+                                    {t.admin && (
+                                        <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">
+                                            Admin
+                                        </span>
+                                    )}
+                                </div>
                                 {t.address && (
                                     <span className="text-xs text-gray-500 truncate">
                                         {t.address}
@@ -85,13 +95,22 @@ export default function AdminClient({ initialTrappers }: Props) {
                                     </span>
                                 )}
                             </div>
-                            <button
-                                type="button"
-                                onClick={() => { setConfirmTarget(t); setFeedback(null) }}
-                                className="shrink-0 bg-red-50 hover:bg-red-100 active:bg-red-200 text-red-600 text-xs font-semibold py-2 px-3 rounded-lg transition-colors duration-150"
-                            >
-                                Supprimer
-                            </button>
+                            <div className="flex flex-col gap-1.5 shrink-0">
+                                <button
+                                    type="button"
+                                    onClick={() => router.push(`/admin/edit-user/${t.id}`)}
+                                    className="bg-amber-50 hover:bg-amber-100 active:bg-amber-200 text-amber-700 text-xs font-semibold py-2 px-3 rounded-lg transition-colors duration-150"
+                                >
+                                    Éditer
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => { setConfirmTarget(t); setFeedback(null) }}
+                                    className="bg-red-50 hover:bg-red-100 active:bg-red-200 text-red-600 text-xs font-semibold py-2 px-3 rounded-lg transition-colors duration-150"
+                                >
+                                    Supprimer
+                                </button>
+                            </div>
                         </div>
                     ))
                 )}
@@ -102,7 +121,7 @@ export default function AdminClient({ initialTrappers }: Props) {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
                     <div className="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 flex flex-col gap-4">
                         <p className="text-gray-800 text-sm text-center leading-relaxed">
-                            Êtes-vous sûr de vouloir supprimer ce piégeur ?
+                            Êtes-vous sûr de vouloir supprimer cet utilisateur ?
                         </p>
                         <p className="text-center font-semibold text-amber-800">
                             {confirmTarget.name}

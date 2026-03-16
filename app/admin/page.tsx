@@ -1,4 +1,3 @@
-
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import Image from "next/image"
@@ -20,17 +19,16 @@ export default async function AdminPage() {
     if (error || !user) redirect("/login")
     if (!user.admin) redirect("/dashboard")
 
-    // Fetch non-admin trappers for the list
+    // Fetch all users (admin and non-admin) for the list
     const { data: trappers } = await supabase
         .from("users")
-        .select("id, name, address, telephone")
-        .eq("admin", false)
+        .select("id, name, address, telephone, admin")
         .order("name", { ascending: true })
 
     return (
         <div className="min-h-screen flex flex-col">
             <header className="bg-amber-600 shadow-md relative z-10">
-                <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between gap-3">
+                <div className="max-w-4xl mx-auto px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
                     <div className="flex items-center gap-3">
                         <Image src="/frelon-face.jpg" alt="Frelon" width={36} height={36} className="rounded-full object-cover" />
                         <span className="text-white font-semibold text-lg tracking-wide">

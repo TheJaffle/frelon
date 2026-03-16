@@ -2,17 +2,35 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { createUser } from "../actions"
+import { updateUser } from "../../actions"
 
-export default function NewUserForm() {
+type User = {
+    id: string
+    name: string
+    address: string | null
+    telephone: string | null
+    email: string | null
+    password_hash: string | null
+    trap_type: string | null
+    appat: string | null
+    admin: boolean
+}
+
+type Props = {
+    user: User
+}
+
+export default function EditUserForm({ user }: Props) {
     const router = useRouter()
 
-    const [name, setName] = useState("")
-    const [address, setAddress] = useState("")
-    const [telephone, setTelephone] = useState("")
-    const [email, setEmail] = useState("")
-    const [passwordHash, setPasswordHash] = useState("")
-    const [isAdminUser, setIsAdminUser] = useState(false)
+    const [name, setName] = useState(user.name ?? "")
+    const [address, setAddress] = useState(user.address ?? "")
+    const [telephone, setTelephone] = useState(user.telephone ?? "")
+    const [email, setEmail] = useState(user.email ?? "")
+    const [passwordHash, setPasswordHash] = useState(user.password_hash ?? "")
+    const [trapType, setTrapType] = useState(user.trap_type ?? "Vespa Catch Select")
+    const [appat, setAppat] = useState(user.appat ?? "Classique 1/3-1/3-1/3")
+    const [isAdminUser, setIsAdminUser] = useState(user.admin)
     const [isSaving, setIsSaving] = useState(false)
     const [error, setError] = useState("")
     const [success, setSuccess] = useState(false)
@@ -52,9 +70,11 @@ export default function NewUserForm() {
         formData.set("telephone", telephone)
         formData.set("email", email)
         formData.set("password_hash", passwordHash)
+        formData.set("trap_type", trapType)
+        formData.set("appat", appat)
         formData.set("admin", isAdminUser ? "true" : "false")
 
-        const result = await createUser(formData)
+        const result = await updateUser(user.id, formData)
         setIsSaving(false)
 
         if (result.success) {
@@ -151,7 +171,35 @@ export default function NewUserForm() {
                 </p>
             </div>
 
-            {/* Admin checkbox */}
+            <div className="flex flex-col gap-1">
+                <label htmlFor="trap_type" className="text-sm font-medium text-gray-700">
+                    Type de piège
+                </label>
+                <input
+                    id="trap_type"
+                    type="text"
+                    value={trapType}
+                    onChange={(e) => { setTrapType(e.target.value); setError("") }}
+                    placeholder="Vespa Catch Select"
+                    className="border border-gray-300 rounded-lg px-4 py-2.5 text-gray-800 focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+                />
+            </div>
+
+            <div className="flex flex-col gap-1">
+                <label htmlFor="appat" className="text-sm font-medium text-gray-700">
+                    Appât
+                </label>
+                <input
+                    id="appat"
+                    type="text"
+                    value={appat}
+                    onChange={(e) => { setAppat(e.target.value); setError("") }}
+                    placeholder="Classique 1/3-1/3-1/3"
+                    className="border border-gray-300 rounded-lg px-4 py-2.5 text-gray-800 focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+                />
+            </div>
+
+            {/* Admin switch */}
             <div className="flex items-center gap-3 py-1">
                 <button
                     type="button"
@@ -181,7 +229,7 @@ export default function NewUserForm() {
 
             {success && (
                 <p className="text-green-700 bg-green-50 border border-green-200 rounded-lg px-4 py-2 text-sm text-center">
-                    Piégeur créé avec succès ! Redirection…
+                    Modifications enregistrées ! Redirection…
                 </p>
             )}
 
@@ -190,7 +238,7 @@ export default function NewUserForm() {
                 disabled={isSaving || !isValid}
                 className="bg-amber-600 hover:bg-amber-700 active:bg-amber-800 disabled:opacity-60 text-white font-semibold text-base py-3 rounded-xl shadow-sm transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-amber-300 mt-2"
             >
-                {isSaving ? "Enregistrement…" : "Enregistrer"}
+                {isSaving ? "Enregistrement…" : "Enregistrer les modifications"}
             </button>
         </form>
     )
