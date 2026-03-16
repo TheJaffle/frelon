@@ -37,7 +37,7 @@ export default async function MapPage() {
                             Frelon Asiatique
                         </span>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
                         {isAdmin && (
                             <a href="/admin" className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors">
                                 Admin

@@ -1,9 +1,7 @@
-
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState } from "react"
 import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "react-leaflet"
-import MarkerClusterGroup from "react-leaflet-cluster"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 
@@ -47,11 +45,12 @@ function getColor(trapType: string | null): string {
 // Marker size based on zoom level
 // ───────────────────────────────────────────
 function getMarkerSize(zoom: number): { width: number; height: number } {
-    if (zoom >= 15) return { width: 32, height: 48 }
-    if (zoom >= 14) return { width: 28, height: 42 }
-    if (zoom >= 13) return { width: 22, height: 33 }
-    if (zoom >= 12) return { width: 18, height: 27 }
-    return { width: 14, height: 21 }
+    if (zoom >= 16) return { width: 34, height: 50 }
+    if (zoom >= 15) return { width: 28, height: 42 }
+    if (zoom >= 14) return { width: 22, height: 33 }
+    if (zoom >= 13) return { width: 16, height: 24 }
+    if (zoom >= 12) return { width: 12, height: 18 }
+    return { width: 10, height: 15 }
 }
 
 // ───────────────────────────────────────────
@@ -76,7 +75,7 @@ function createColoredIcon(color: string, zoom: number): L.DivIcon {
 }
 
 // ───────────────────────────────────────────
-// Auto-fit bounds component
+// Auto-fit bounds
 // ───────────────────────────────────────────
 function FitBounds({ trappers }: { trappers: Trapper[] }) {
     const map = useMap()
@@ -95,10 +94,10 @@ function FitBounds({ trappers }: { trappers: Trapper[] }) {
 }
 
 // ───────────────────────────────────────────
-// Zoom tracker — returns current zoom level
+// Zoom-aware markers (no clustering)
 // ───────────────────────────────────────────
-function useZoomLevel(initialZoom: number): number {
-    const [zoom, setZoom] = useState(initialZoom)
+function ZoomAwareMarkers({ trappers }: { trappers: Trapper[] }) {
+    const [zoom, setZoom] = useState(14)
 
     useMapEvents({
         zoomend(e) {
@@ -106,51 +105,8 @@ function useZoomLevel(initialZoom: number): number {
         },
     })
 
-    return zoom
-}
-
-function ZoomAwareMarkers({ trappers }: { trappers: Trapper[] }) {
-    const zoom = useZoomLevel(14)
-
-    // Cluster radius adapts to zoom: tighter clusters when zoomed in
-    const clusterRadius = zoom >= 15 ? 30 : zoom >= 13 ? 40 : 50
-
-    // Custom cluster icon that stays visible at any zoom
-    const createClusterIcon = useCallback((cluster: L.MarkerCluster) => {
-        const count = cluster.getChildCount()
-        const size = zoom >= 14 ? 40 : zoom >= 12 ? 34 : 28
-        const fontSize = zoom >= 14 ? 14 : zoom >= 12 ? 12 : 10
-
-        return L.divIcon({
-            html: `<div style="
-                width: ${size}px;
-                height: ${size}px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background: rgba(217, 119, 6, 0.85);
-                border: 2px solid #fff;
-                border-radius: 50%;
-                color: #fff;
-                font-weight: 700;
-                font-size: ${fontSize}px;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            ">${count}</div>`,
-            className: "",
-            iconSize: [size, size],
-            iconAnchor: [size / 2, size / 2],
-        })
-    }, [zoom])
-
     return (
-        <MarkerClusterGroup
-            chunkedLoading
-            maxClusterRadius={clusterRadius}
-            iconCreateFunction={createClusterIcon}
-            spiderfyOnMaxZoom={true}
-            showCoverageOnHover={false}
-            disableClusteringAtZoom={17}
-        >
+        <>
             {trappers.map((t, i) => (
                 <Marker
                     key={`${t.name}-${i}`}
@@ -176,7 +132,7 @@ function ZoomAwareMarkers({ trappers }: { trappers: Trapper[] }) {
                     </Popup>
                 </Marker>
             ))}
-        </MarkerClusterGroup>
+        </>
     )
 }
 
