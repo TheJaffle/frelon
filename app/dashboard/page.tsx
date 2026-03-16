@@ -48,6 +48,12 @@ export default async function DashboardPage() {
                         >
                             Statistiques
                         </a>
+                        <a
+                            href="/map"
+                            className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors"
+                        >
+                            Carte
+                        </a>
                         <form
                             action={async () => {
                                 "use server"

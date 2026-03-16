@@ -75,6 +75,9 @@ export default async function StatsPage() {
                     Admin
                   </a>
               )}
+              <a href="/map" className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors">
+                Carte
+              </a>
               <a href="/dashboard" className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors">
                 ← Retour
               </a>
