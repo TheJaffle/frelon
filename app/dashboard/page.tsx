@@ -83,6 +83,17 @@ export default async function DashboardPage() {
                         <h2 className="text-center text-amber-800 text-sm">
                             {user.address}
                         </h2>
+
+                        {/* Hornet identification image */}
+                        <div className="mt-4 flex justify-center px-4">
+                            <Image
+                                src="/type-frelon.jpg"
+                                alt="Identification des types de frelons"
+                                width={480}
+                                height={320}
+                                className="w-full max-w-[480px] h-auto rounded-xl shadow-md"
+                            />
+                        </div>
                     </div>
 
                     <DashboardClient userId={userId} initialData={user} weeks={WEEKS} />

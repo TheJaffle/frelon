@@ -1,3 +1,4 @@
+
 export const WEEKS = 12
 
 export const WEEK_DATES: string[] = (() => {
@@ -16,7 +17,7 @@ export const WEEK_DATES: string[] = (() => {
       endMonth += 1
     }
     dates.push(
-      `S${i + 1} ${String(startDay).padStart(2, "0")}/${monthNames[startMonth]}`
+        `${String(startDay).padStart(2, "0")}/${monthNames[startMonth]}`
     )
     day += 7
     if (day > daysInMonth[month]) {
@@ -31,7 +32,8 @@ export type WeekStat = {
   label: string
   asian: number
   europe: number
-  total: number
+  declared: number
+  totalUsers: number
   asianCumul: number
   europeCumul: number
 }

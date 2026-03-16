@@ -16,6 +16,8 @@ export default async function StatsPage() {
 
   if (error || !users) redirect("/login")
 
+  const totalUsers = users.length
+
   let asianCumul = 0
   let europeCumul = 0
 
@@ -23,13 +25,15 @@ export default async function StatsPage() {
     const w = i + 1
     const asian = users.reduce((sum, u) => sum + (Number(u[`asian_week_${w}`]) || 0), 0)
     const europe = users.reduce((sum, u) => sum + (Number(u[`europe_week_${w}`]) || 0), 0)
+    const declared = users.reduce((sum, u) => sum + (u[`declared_week_${w}`] ? 1 : 0), 0)
     asianCumul += asian
     europeCumul += europe
     return {
       label: WEEK_DATES[i],
       asian,
       europe,
-      total: asian + europe,
+      declared,
+      totalUsers,
       asianCumul,
       europeCumul,
     }
@@ -93,9 +97,9 @@ export default async function StatsPage() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-4 px-4 py-2 bg-amber-100 text-xs font-semibold text-amber-800 uppercase tracking-wide">
                 <span className="whitespace-nowrap">Semaine</span>
-                <span className="text-center">🐝 Asiatiques</span>
-                <span className="text-center">🟡 Européens</span>
-                <span className="text-center font-bold">Total</span>
+                <span className="text-center">Asiat</span>
+                <span className="text-center">Europ</span>
+                <span className="text-center font-bold">Déclarants</span>
               </div>
               {weekStats.map((s, i) => (
                   <div
@@ -105,14 +109,14 @@ export default async function StatsPage() {
                     <span className="text-xs font-semibold text-amber-700 whitespace-nowrap">{s.label}</span>
                     <span className="text-center text-gray-700">{s.asian}</span>
                     <span className="text-center text-gray-700">{s.europe}</span>
-                    <span className="text-center font-bold text-amber-800">{s.total}</span>
+                    <span className="text-center font-bold text-amber-800">{s.declared} / {s.totalUsers}</span>
                   </div>
               ))}
               <div className="grid grid-cols-[auto_1fr_1fr_1fr] gap-x-4 px-4 py-2 bg-amber-200 text-sm font-bold text-amber-900 border-t border-amber-300">
                 <span>TOTAL</span>
                 <span className="text-center">{weekStats.reduce((s, w) => s + w.asian, 0)}</span>
                 <span className="text-center">{weekStats.reduce((s, w) => s + w.europe, 0)}</span>
-                <span className="text-center">{weekStats.reduce((s, w) => s + w.total, 0)}</span>
+                <span></span>
               </div>
             </div>
           </div>
