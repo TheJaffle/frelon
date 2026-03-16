@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "react-leaflet"
+import { useEffect } from "react"
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
 
@@ -42,25 +42,14 @@ function getColor(trapType: string | null): string {
 }
 
 // ───────────────────────────────────────────
-// Marker size based on zoom level
+// Small fixed-size SVG marker
 // ───────────────────────────────────────────
-function getMarkerSize(zoom: number): { width: number; height: number } {
-    if (zoom >= 16) return { width: 34, height: 50 }
-    if (zoom >= 15) return { width: 28, height: 42 }
-    if (zoom >= 14) return { width: 22, height: 33 }
-    if (zoom >= 13) return { width: 16, height: 24 }
-    if (zoom >= 12) return { width: 12, height: 18 }
-    return { width: 10, height: 15 }
-}
+const MARKER_W = 10
+const MARKER_H = 15
 
-// ───────────────────────────────────────────
-// SVG marker icon generator (zoom-aware)
-// ───────────────────────────────────────────
-function createColoredIcon(color: string, zoom: number): L.DivIcon {
-    const { width, height } = getMarkerSize(zoom)
-
+function createColoredIcon(color: string): L.DivIcon {
     const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="${width}" height="${height}">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="${MARKER_W}" height="${MARKER_H}">
       <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="${color}" stroke="#fff" stroke-width="1.5"/>
       <circle cx="12" cy="12" r="5" fill="#fff" opacity="0.9"/>
     </svg>`
@@ -68,9 +57,9 @@ function createColoredIcon(color: string, zoom: number): L.DivIcon {
     return L.divIcon({
         html: svg,
         className: "",
-        iconSize: [width, height],
-        iconAnchor: [width / 2, height],
-        popupAnchor: [0, -height + 6],
+        iconSize: [MARKER_W, MARKER_H],
+        iconAnchor: [MARKER_W / 2, MARKER_H],
+        popupAnchor: [0, -MARKER_H + 4],
     })
 }
 
@@ -94,24 +83,29 @@ function FitBounds({ trappers }: { trappers: Trapper[] }) {
 }
 
 // ───────────────────────────────────────────
-// Zoom-aware markers (no clustering)
+// Map component
 // ───────────────────────────────────────────
-function ZoomAwareMarkers({ trappers }: { trappers: Trapper[] }) {
-    const [zoom, setZoom] = useState(14)
-
-    useMapEvents({
-        zoomend(e) {
-            setZoom(e.target.getZoom())
-        },
-    })
-
+export default function MapClient({ trappers }: Props) {
     return (
-        <>
+        <MapContainer
+            center={[45.8145, 4.716]}
+            zoom={14}
+            className="w-full h-full z-0"
+            scrollWheelZoom={true}
+            minZoom={10}
+        >
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+
+            <FitBounds trappers={trappers} />
+
             {trappers.map((t, i) => (
                 <Marker
                     key={`${t.name}-${i}`}
                     position={[t.latitude, t.longitude]}
-                    icon={createColoredIcon(getColor(t.trap_type), zoom)}
+                    icon={createColoredIcon(getColor(t.trap_type))}
                 >
                     <Popup>
                         <div className="text-sm leading-relaxed">
@@ -132,29 +126,6 @@ function ZoomAwareMarkers({ trappers }: { trappers: Trapper[] }) {
                     </Popup>
                 </Marker>
             ))}
-        </>
-    )
-}
-
-// ───────────────────────────────────────────
-// Map component
-// ───────────────────────────────────────────
-export default function MapClient({ trappers }: Props) {
-    return (
-        <MapContainer
-            center={[45.8145, 4.716]}
-            zoom={14}
-            className="w-full h-full z-0"
-            scrollWheelZoom={true}
-            minZoom={10}
-        >
-            <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-
-            <FitBounds trappers={trappers} />
-            <ZoomAwareMarkers trappers={trappers} />
         </MapContainer>
     )
 }
