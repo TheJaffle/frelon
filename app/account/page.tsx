@@ -1,13 +1,10 @@
-
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import Image from "next/image"
 import { supabase } from "@/lib/supabase"
-import DashboardClient from "./DashboardClient"
+import AccountForm from "./AccountForm"
 
-const WEEKS = 12
-
-export default async function DashboardPage() {
+export default async function AccountPage() {
     const cookieStore = await cookies()
     const userId = cookieStore.get("user_id")?.value
 
@@ -15,7 +12,7 @@ export default async function DashboardPage() {
 
     const { data: user, error } = await supabase
         .from("users")
-        .select("*")
+        .select("id, name, address, telephone, email, trap_type, appat, admin, latitude, longitude")
         .eq("id", userId)
         .single()
 
@@ -35,43 +32,20 @@ export default async function DashboardPage() {
                     </div>
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
                         {isAdmin && (
-                            <a
-                                href="/admin"
-                                className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors"
-                            >
+                            <a href="/admin" className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors">
                                 Admin
                             </a>
                         )}
-                        <a
-                            href="/account"
-                            className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors"
-                        >
-                            Compte
+                        <a href="/dashboard" className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors">
+                            ← Retour
                         </a>
-                        <a
-                            href="/stats"
-                            className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors"
-                        >
-                            Statistiques
-                        </a>
-                        <a
-                            href="/map"
-                            className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors"
-                        >
-                            Carte
-                        </a>
-                        <form
-                            action={async () => {
-                                "use server"
-                                const cookieStore = await cookies()
-                                cookieStore.delete("user_id")
-                                redirect("/")
-                            }}
-                        >
-                            <button
-                                type="submit"
-                                className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors"
-                            >
+                        <form action={async () => {
+                            "use server"
+                            const cookieStore = await cookies()
+                            cookieStore.delete("user_id")
+                            redirect("/")
+                        }}>
+                            <button type="submit" className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors">
                                 Se déconnecter
                             </button>
                         </form>
@@ -80,21 +54,17 @@ export default async function DashboardPage() {
             </header>
 
             <main className="flex-1 flex justify-center px-4 py-10">
-                <div className="w-full max-w-2xl flex flex-col gap-8">
+                <div className="w-full max-w-md flex flex-col gap-6">
                     <div className="text-center">
                         <h1 className="text-2xl sm:text-3xl font-bold text-amber-800">
-                            Bonjour, {user.name}
+                            Mon compte
                         </h1>
                         <p className="text-gray-500 text-sm mt-1">
-                            Déclarez vos captures hebdomadaires
+                            Modifiez vos informations personnelles.
                         </p>
                     </div>
 
-                    <DashboardClient
-                        userId={userId}
-                        initialData={user as Record<string, unknown>}
-                        weeks={WEEKS}
-                    />
+                    <AccountForm user={user} />
                 </div>
             </main>
 

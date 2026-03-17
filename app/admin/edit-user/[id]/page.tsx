@@ -1,3 +1,4 @@
+
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import Image from "next/image"
@@ -24,10 +25,10 @@ export default async function EditUserPage({ params }: Props) {
     if (authError || !currentUser) redirect("/login")
     if (!currentUser.admin) redirect("/dashboard")
 
-    // Fetch the user to edit
+    // Fetch the user to edit — including latitude & longitude
     const { data: targetUser, error: fetchError } = await supabase
         .from("users")
-        .select("id, name, address, telephone, email, password_hash, trap_type, appat, admin")
+        .select("id, name, address, telephone, email, password_hash, trap_type, appat, admin, latitude, longitude")
         .eq("id", id)
         .single()
 

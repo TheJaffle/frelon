@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase"
 const WEEKS = 12
 
 /**
- * Save a trapper's weekly captures, trap type, bait, and declared flags.
+ * Save a trapper's weekly captures and declared flags.
  */
 export async function saveCaptures(
     userId: string,
@@ -15,16 +15,9 @@ export async function saveCaptures(
     return { success: false, error: "Utilisateur non identifié." }
   }
 
-  // Build the update payload from the form data
   const update: Record<string, unknown> = {}
 
-  // Trap type & bait
-  const trapType = formData.get("trap_type") as string | null
-  const appat = formData.get("appat") as string | null
-  if (trapType !== null) update.trap_type = trapType
-  if (appat !== null) update.appat = appat
-
-  // Weekly capture values + declared flags
+  // Weekly capture values + declared flags only
   for (let w = 1; w <= WEEKS; w++) {
     const asian = formData.get(`asian_week_${w}`)
     const other = formData.get(`other_week_${w}`)

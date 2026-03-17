@@ -43,6 +43,9 @@ export default async function MapPage() {
                                 Admin
                             </a>
                         )}
+                        <a href="/account" className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors">
+                            Compte
+                        </a>
                         <a href="/dashboard" className="text-amber-100 hover:text-white text-sm underline underline-offset-2 transition-colors">
                             ← Retour
                         </a>

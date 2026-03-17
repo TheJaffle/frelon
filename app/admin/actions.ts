@@ -38,6 +38,10 @@ export async function createUser(formData: FormData): Promise<{ success: boolean
     const email = (formData.get("email") as string)?.trim()
     const passwordHash = (formData.get("password_hash") as string)?.trim()
     const isAdmin = formData.get("admin") === "true"
+    const latRaw = (formData.get("latitude") as string)?.trim()
+    const lngRaw = (formData.get("longitude") as string)?.trim()
+    const latitude = latRaw ? parseFloat(latRaw) : null
+    const longitude = lngRaw ? parseFloat(lngRaw) : null
 
     // Validation
     if (!name) return { success: false, error: "Le nom est obligatoire." }
@@ -58,6 +62,8 @@ export async function createUser(formData: FormData): Promise<{ success: boolean
         trap_type: "Vespa Catch Select",
         appat: "Classique 1/3-1/3-1/3",
         admin: isAdmin,
+        latitude,
+        longitude,
     })
 
     if (error) {
@@ -106,6 +112,8 @@ export async function getUser(userId: string): Promise<{
         trap_type: string | null
         appat: string | null
         admin: boolean
+        latitude: number | null
+        longitude: number | null
     }
     error?: string
 }> {
@@ -114,7 +122,7 @@ export async function getUser(userId: string): Promise<{
 
     const { data, error } = await supabase
         .from("users")
-        .select("id, name, address, telephone, email, password_hash, trap_type, appat, admin")
+        .select("id, name, address, telephone, email, password_hash, trap_type, appat, admin, latitude, longitude")
         .eq("id", userId)
         .single()
 
@@ -142,9 +150,13 @@ export async function updateUser(
     const telephone = (formData.get("telephone") as string)?.trim()
     const email = (formData.get("email") as string)?.trim()
     const passwordHash = (formData.get("password_hash") as string)?.trim()
+   const isAdmin = formData.get("admin") === "true"
+    const latRaw = (formData.get("latitude") as string)?.trim()
+    const lngRaw = (formData.get("longitude") as string)?.trim()
+    const latitude = latRaw ? parseFloat(latRaw) : null
+    const longitude = lngRaw ? parseFloat(lngRaw) : null
     const trapType = (formData.get("trap_type") as string)?.trim()
     const appat = (formData.get("appat") as string)?.trim()
-    const isAdmin = formData.get("admin") === "true"
 
     // Validation
     if (!name) return { success: false, error: "Le nom est obligatoire." }
@@ -156,18 +168,18 @@ export async function updateUser(
     }
     if (!passwordHash) return { success: false, error: "Le mot de passe est obligatoire." }
 
-    const { error } = await supabase
-        .from("users")
-        .update({
-            name,
-            address,
-            telephone,
-            email,
-            password_hash: passwordHash,
-            trap_type: trapType || "Vespa Catch Select",
-            appat: appat || "Classique 1/3-1/3-1/3",
-            admin: isAdmin,
-        })
+    const { error } = await supabase.from("users").insert({
+        name,
+        address,
+        telephone,
+        email,
+        password_hash: passwordHash,
+        trap_type: trapType || "Vespa Catch Select",
+        appat: appat || "Classique 1/3-1/3-1/3",
+        admin: isAdmin,
+        latitude,
+        longitude,
+    })
         .eq("id", userId)
 
     if (error) {
