@@ -150,7 +150,7 @@ export async function updateUser(
     const telephone = (formData.get("telephone") as string)?.trim()
     const email = (formData.get("email") as string)?.trim()
     const passwordHash = (formData.get("password_hash") as string)?.trim()
-   const isAdmin = formData.get("admin") === "true"
+    const isAdmin = formData.get("admin") === "true"
     const latRaw = (formData.get("latitude") as string)?.trim()
     const lngRaw = (formData.get("longitude") as string)?.trim()
     const latitude = latRaw ? parseFloat(latRaw) : null
@@ -168,18 +168,20 @@ export async function updateUser(
     }
     if (!passwordHash) return { success: false, error: "Le mot de passe est obligatoire." }
 
-    const { error } = await supabase.from("users").insert({
-        name,
-        address,
-        telephone,
-        email,
-        password_hash: passwordHash,
-        trap_type: trapType || "Vespa Catch Select",
-        appat: appat || "Classique 1/3-1/3-1/3",
-        admin: isAdmin,
-        latitude,
-        longitude,
-    })
+    const { error } = await supabase
+        .from("users")
+        .update({
+            name,
+            address,
+            telephone,
+            email,
+            password_hash: passwordHash,
+            trap_type: trapType || "Vespa Catch Select",
+            appat: appat || "Classique 1/3-1/3-1/3",
+            admin: isAdmin,
+            latitude,
+            longitude,
+        })
         .eq("id", userId)
 
     if (error) {

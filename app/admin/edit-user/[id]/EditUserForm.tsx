@@ -196,14 +196,14 @@ export default function EditUserForm({ user }: Props) {
                         disabled={isGeocoding || !address.trim()}
                         className="bg-blue-50 hover:bg-blue-100 active:bg-blue-200 disabled:opacity-50 text-blue-700 text-sm font-semibold py-2 px-4 rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-300"
                     >
-                        {isGeocoding ? "Recherche…" : "📍 Trouver les coordonnées"}
+                        {isGeocoding ? "Recherche…" : "📍 Trouver coordonnées automatiquement"}
                     </button>
                     <button
                         type="button"
                         onClick={() => setShowMapPicker(true)}
                         className="bg-green-50 hover:bg-green-100 active:bg-green-200 text-green-700 text-sm font-semibold py-2 px-4 rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-green-300"
                     >
-                        🗺️ Choisir sur la carte
+                        🗺️ Choisir manuellement sur la carte
                     </button>
                 </div>
 
