@@ -169,7 +169,7 @@ export default function DashboardClient({ userId, initialData, weeks }: Props) {
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 items-center">
 
           <p className="text-red-500 text-sm">
-            N'oubliez pas d'enregister vos captures (bouton en bas de page).
+            N'oubliez pas d'enregister (bouton en bas de page).
           </p>
 
           <div className="w-full max-w-2xl mx-auto flex flex-col gap-2">
