@@ -86,8 +86,9 @@ export default async function DashboardPage() {
                             Bonjour, {user.name}
                         </h1>
                         <p className="text-gray-500 text-sm mt-1">
-                            Déclarez vos captures hebdomadaires
+                            Déclarez vos captures hebdomadaires -
                         </p>
+
                     </div>
 
                     <DashboardClient
