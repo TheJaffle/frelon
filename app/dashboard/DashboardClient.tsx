@@ -12,8 +12,7 @@ type Props = {
   weeks: number
 }
 
-/* ── Simple modal component ──────────────────────────────── */
-
+// ── Modal de validation hebdomadaire ─────────────────────
 function Modal({ message, onClose }: { message: string; onClose: () => void }) {
   return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
@@ -31,8 +30,48 @@ function Modal({ message, onClose }: { message: string; onClose: () => void }) {
   )
 }
 
-/* ── Main component ──────────────────────────────────────── */
+// ── Modal de succès après enregistrement ─────────────────
+function SuccessModal({
+                        onViewStats,
+                        onQuit,
+                      }: {
+  onViewStats: () => void
+  onQuit: () => void
+}) {
+  return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-8 flex flex-col gap-6 text-center">
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-4xl">✅</span>
+            <h2 className="text-xl font-bold text-gray-800">
+              Enregistrement effectué
+            </h2>
+            <p className="text-gray-500 text-sm">
+              Vos captures ont bien été sauvegardées.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3">
+            <button
+                type="button"
+                onClick={onViewStats}
+                className="w-full bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-semibold text-base py-3 rounded-xl shadow-sm transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-amber-300"
+            >
+              Voir statistiques
+            </button>
+            <button
+                type="button"
+                onClick={onQuit}
+                className="w-full bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-700 font-semibold text-base py-3 rounded-xl transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-gray-300"
+            >
+              Quitter application
+            </button>
+          </div>
+        </div>
+      </div>
+  )
+}
 
+// ── Composant principal ───────────────────────────────────
 export default function DashboardClient({ userId, initialData, weeks }: Props) {
   const router = useRouter()
 
@@ -60,6 +99,7 @@ export default function DashboardClient({ userId, initialData, weeks }: Props) {
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState("")
   const [modalMessage, setModalMessage] = useState<string | null>(null)
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   const isWeekVisible = (w: number) => declared[w] || openedWeeks.has(w)
 
@@ -107,10 +147,21 @@ export default function DashboardClient({ userId, initialData, weeks }: Props) {
     setIsSaving(false)
 
     if (result.success) {
-      router.push("/stats")
+      setShowSuccessModal(true)
     } else {
       setSaveError(result.error ?? "Erreur inconnue.")
     }
+  }
+
+  const handleViewStats = () => {
+    setShowSuccessModal(false)
+    router.push("/stats")
+  }
+
+  const handleQuit = () => {
+    // Supprimer le cookie user_id côté client
+    document.cookie = "user_id=; path=/; max-age=0"
+    window.location.href = "/"
   }
 
   return (
@@ -194,8 +245,17 @@ export default function DashboardClient({ userId, initialData, weeks }: Props) {
           </button>
         </form>
 
+        {/* Modale de validation hebdomadaire */}
         {modalMessage && (
             <Modal message={modalMessage} onClose={() => setModalMessage(null)} />
+        )}
+
+        {/* Modale de succès après enregistrement */}
+        {showSuccessModal && (
+            <SuccessModal
+                onViewStats={handleViewStats}
+                onQuit={handleQuit}
+            />
         )}
       </>
   )
