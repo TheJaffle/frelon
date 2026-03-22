@@ -25,7 +25,8 @@ type Props = {
 // ───────────────────────────────────────────
 const TRAP_COLORS: Record<string, string> = {
     "BeeVital": "#EAB308",
-    "Grilel Neoppi": "#3B82F6",
+    "Nasse" : "#1708eb",
+    "Grille Neoppi": "#3B82F6",
     "Ornetin": "#8B5CF6",
     "Osaka": "#EF4444",
     "Vespa Catch Select": "#22C55E",

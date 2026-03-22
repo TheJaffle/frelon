@@ -86,7 +86,8 @@ export default async function MapPage() {
                         <div className="flex flex-wrap gap-x-4 gap-y-1.5">
                             {[
                                 { label: "BeeVital", color: "#EAB308" },
-                                { label: "Grilel Neoppi", color: "#3B82F6" },
+                                { label:"Nasse" , color: "#1708eb"},
+                                { label: "Grille Neoppi", color: "#3B82F6" },
                                 { label: "Ornetin", color: "#8B5CF6" },
                                 { label: "Osaka", color: "#EF4444" },
                                 { label: "Vespa Catch Select", color: "#22C55E" },

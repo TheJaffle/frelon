@@ -9,7 +9,8 @@ const MapPickerModal = dynamic(() => import("../admin/MapPickerModal"), { ssr: f
 
 const TRAP_TYPE_OPTIONS = [
     "BeeVital",
-    "Grilel Neoppi",
+    "Nasse",
+    "Grille Neoppi",
     "Ornetin",
     "Osaka",
     "Vespa Catch Select",

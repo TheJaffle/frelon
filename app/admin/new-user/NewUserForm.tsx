@@ -312,7 +312,7 @@ export default function NewUserForm() {
                     <select id="trap_type" value={trapType} onChange={(e) => { setTrapType(e.target.value); setError("") }}
                             className="border border-gray-300 rounded-lg px-4 py-2.5 text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-amber-400 transition">
                         <option value="">— Sélectionnez —</option>
-                        {["BeeVital","Grilel Neoppi","Ornetin","Osaka","Vespa Catch Select","Vespa Catch","Good4Bees","Bouteille (à proscrire)"].map((opt) => (
+                        {["BeeVital","Nasse","Grille Neoppi","Ornetin","Osaka","Vespa Catch Select","Vespa Catch","Good4Bees","Bouteille (à proscrire)"].map((opt) => (
                             <option key={opt} value={opt}>{opt}</option>
                         ))}
                     </select>

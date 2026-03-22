@@ -64,9 +64,10 @@ export default function DashboardClient({ userId, initialData, weeks }: Props) {
   const isWeekVisible = (w: number) => declared[w] || openedWeeks.has(w)
 
   const handleDeclare = (w: number) => {
-    const today = new Date()
+    const now = new Date()
+    const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0)
 
-    if (WEEK_RANGES[w - 1].endDate > today) {
+    if (WEEK_RANGES[w - 1].endDate > todayMidnight) {
       setModalMessage("Vous ne pouvez pas déclarer les prises d'une semaine avant le dimanche de celle-ci")
       return
     }

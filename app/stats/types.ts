@@ -26,8 +26,7 @@ export const WEEK_RANGES: WeekRange[] = (() => {
     const label = `${String(startDay).padStart(2, "0")}/${monthNames[startMonth]}-${String(endDay).padStart(2, "0")}/${monthNames[endMonth]}`
 
     const year = new Date().getFullYear()
-    const endDate = new Date(year, endMonth - 1, endDay, 23, 59, 59)
-
+    const endDate = new Date(year, endMonth - 1, endDay, 0, 0, 0)
     ranges.push({ label, endDate })
 
     day += 7
